@@ -14,6 +14,9 @@ import discord4j.core.event.domain.interaction.SelectMenuInteractionEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import static altraid.Constants.EMOJIS;
@@ -22,7 +25,6 @@ import static altraid.Singletons.*;
 public class App {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
-  private static final String BOT_TOKEN = "MTE5NjU2NjQ5NDQ0NDc4NTc3NQ.Gb9uIl.yh17Aoz_j7lVgBOKNID7cej2dIv7INfbaKSzNY";
 
   public static void main(String[] args) {
     try {
@@ -35,8 +37,8 @@ public class App {
     }
   }
 
-  private static void run() {
-    CLIENT = DiscordClient.create(BOT_TOKEN);
+  private static void run() throws IOException {
+    CLIENT = DiscordClient.create(readToken());
     GatewayDiscordClient gateway = CLIENT.login().block();
 
     commandRegistrar(CLIENT);
@@ -69,5 +71,9 @@ public class App {
     } catch (Exception e) {
       LOGGER.error("Error trying to register global slash commands", e);
     }
+  }
+
+  private static String readToken() throws IOException {
+    return Files.readAllLines(Path.of(Util.getPath() + "/token.txt")).get(0);
   }
 }
